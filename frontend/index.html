@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi-Model AI — Ask once. Compare three.</title>
+  <meta name="description" content="Compare responses from three different AI models simultaneously. Mistral AI, Google Gemini, and OpenRouter — all at once, all for free." />
+  <meta name="theme-color" content="#0a0b0f" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Multi-Model AI Chat" />
+  <meta property="og:description" content="Ask once. Compare responses from three AI models side by side." />
+  <meta property="og:type" content="website" />
+
+  <!-- Favicon (inline SVG) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+
+  <!-- Third-party (CDN) — Markdown + sanitisation -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js" defer></script>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- ═══════════════════════════ HEADER ═══════════════════════════ -->
+  <header class="site-header" role="banner">
+    <div class="logo">
+      <div class="logo-icon" aria-hidden="true">◈</div>
+      <div>
+        <div class="logo-text">Multi-Model AI</div>
+        <div class="logo-tagline">Ask once. Compare three.</div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button
+        class="btn btn-ghost new-chat-btn"
+        id="new-chat-btn"
+        type="button"
+        aria-label="Start a new conversation"
+        title="Start a new conversation (clears input and responses)"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        New
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════ MAIN ════════════════════════════ -->
+  <main class="main-content" role="main">
+
+    <!-- Hero -->
+    <section class="hero" aria-labelledby="hero-title">
+      <h1 class="hero-title" id="hero-title">
+        Ask once.<br/><span>Compare three perspectives.</span>
+      </h1>
+      <p class="hero-sub">
+        Mistral AI · Google Gemini · OpenRouter — three free AI models, one prompt.
+      </p>
+    </section>
+
+    <!-- Input section -->
+    <section class="input-section" aria-label="Prompt input">
+      <div class="input-wrapper">
+
+        <!-- Attachment preview row -->
+        <div class="attachment-preview" id="attachment-preview" aria-live="polite" role="status"></div>
+
+        <!-- Textarea -->
+        <label for="prompt-textarea" class="sr-only">Your prompt</label>
+        <textarea
+          id="prompt-textarea"
+          class="prompt-textarea"
+          placeholder="Ask anything. Compare perspectives from three AI models…"
+          rows="3"
+          aria-label="Enter your prompt"
+          aria-describedby="keyboard-hint"
+          autocomplete="off"
+          spellcheck="true"
+        ></textarea>
+
+        <!-- Toolbar -->
+        <div class="input-toolbar">
+          <div class="input-left">
+            <!-- Attach button -->
+            <button
+              class="attach-btn"
+              id="attach-btn"
+              type="button"
+              aria-label="Attach an image"
+              title="Attach an image (JPEG, PNG, or WebP, max 10 MB)"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
+              </svg>
+              Attach image
+            </button>
+            <!-- Hidden file input -->
+            <input
+              type="file"
+              id="file-input"
+              accept="image/jpeg,image/png,image/webp"
+              style="display:none;"
+              aria-hidden="true"
+            />
+            <span id="keyboard-hint" class="sr-only">
+              Press Enter to submit, Shift+Enter for a new line, Escape to clear.
+            </span>
+          </div>
+
+          <div class="input-right">
+            <!-- Submit button -->
+            <button
+              class="submit-btn"
+              id="submit-btn"
+              type="button"
+              disabled
+              aria-label="Send prompt to all three AI models"
+              title="Send prompt (Enter)"
+            >
+              <span class="btn-label">
+                Ask
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                  <polyline points="12 5 19 12 12 19"/>
+                </svg>
+              </span>
+              <span class="btn-spinner" role="status" aria-label="Sending…">
+                <span class="spinner"></span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Responses section -->
+    <section id="responses-section" aria-label="Model responses">
+      <div class="responses-header">
+        <span class="responses-label">Responses</span>
+      </div>
+
+      <!-- Model grid — populated by ui.js initModelGrid() -->
+      <div
+        class="model-grid"
+        id="model-grid"
+        role="region"
+        aria-label="AI model response cards"
+        aria-live="polite"
+      ></div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toast-container" aria-live="polite" role="status"></div>
+
+<!-- Screen-reader only utility class -->
+<style>
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>
+
+<!-- App (ES Module) -->
+<script type="module" src="js/app.js"></script>
+
+</body>
+</html>
